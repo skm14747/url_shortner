@@ -27,6 +27,7 @@ class UrlView(APIView):
             urls = UrlSerializer(url)
             return Response(urls.data, status=status.HTTP_200_OK)
         except Exception as e:
+            print(str(e))
             return Response({"message":"Invalid short Url"}, status=status.HTTP_400_BAD_REQUEST)
         
     
@@ -43,4 +44,16 @@ class RootView(APIView):
             response = redirect(url.url)
             return response
         except Exception as e:
+            print(str(e))
+            return Response("bad request", status=status.HTTP_400_BAD_REQUEST)
+        
+class SearchView(APIView):
+    def get(self, request):
+        try:
+            keyword = request.GET.get("keyword")
+            urls = Url.objects.filter(url__contains = keyword)
+            urls = UrlSerializer(urls, many=True)
+            return Response(urls.data)
+        except Exception as e:
+            print(str(e))
             return Response("bad request", status=status.HTTP_400_BAD_REQUEST)
